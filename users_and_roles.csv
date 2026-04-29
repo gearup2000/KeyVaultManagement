@@ -1,0 +1,6 @@
+UserID,Role
+kvtestuser1@contoso.com,Key Vault Administrator
+kvtestuser2@contoso.com,Key Vault Secrets Officer
+kvtestuser3@contoso.com,Key Vault Secrets User
+kvtestuser4@contoso.com,Key Vault Crypto Officer
+kvtestuser5@contoso.com,Key Vault Crypto User
