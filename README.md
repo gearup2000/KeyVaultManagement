@@ -9,7 +9,7 @@ Two interfaces are available: a **GUI launcher** and a **CLI script**.
 
 A Windows Forms GUI that wraps all CLI functionality. Azure operations run in a background thread, keeping the window fully responsive.
 
-![Azure Key Vault Role Manager GUI](GUI_version_main_window.jpg)
+![Azure Key Vault Role Manager GUI](GUI_version_main_windows.jpg)
 
 ### How to run
 
