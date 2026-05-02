@@ -1,8 +1,53 @@
-# Azure Key Vault Role Management Guide
+# Azure Key Vault Role Management
 
-Use this guide to run Manage-KeyVaultRoles.ps1 safely.
+Manage Azure Key Vault RBAC role assignments in bulk via CSV.  
+Two interfaces are available: a **GUI launcher** and a **CLI script**.
 
-## Operator SOP (Quick Run)
+---
+
+## GUI Version — `Launch-KeyVaultManager.ps1`
+
+A Windows Forms GUI that wraps all CLI functionality. Azure operations run in a background thread, keeping the window fully responsive.
+
+![Azure Key Vault Role Manager GUI](GUI_version_main_window.jpg)
+
+### How to run
+
+```powershell
+cd "<path-to-script-folder>"
+.\Launch-KeyVaultManager.ps1
+```
+
+> PowerShell 5.1+ is required. No pre-login needed — use the **Sign In** button inside the GUI.
+
+### Panel overview
+
+| Section | Purpose |
+|---|---|
+| **Azure Connection** | Enter Subscription ID, Resource Group, and Key Vault Name |
+| **Azure Login** | Sign in / refresh / sign out; shows current account, tenant, and subscription |
+| **Role Operation** | Choose Add or Remove roles |
+| **Execution Mode** | Enable Preview mode to simulate without making changes |
+| **Input File** | Browse to or paste path of `users_and_roles.csv` |
+| **Lock Information** | Live feed of Key Vault lock state before, during, and after the run |
+| **Output Log** | Scrollable color-coded run log |
+
+### Workflow
+
+1. Click **Sign In** and authenticate.
+2. Fill in **Subscription ID**, **Resource Group**, and **Key Vault Name**.
+3. Select the operation (**Add** or **Remove**) and choose whether to use **Preview mode**.
+4. Browse to your `users_and_roles.csv` file.
+5. Click **▶ Run**. Progress and results appear in the Output Log.
+6. If locks exist, the GUI will prompt for confirmation before removing and after the run for restore.
+
+---
+
+## CLI Version — `Manage-KeyVaultRoles.ps1`
+
+Interactive command-line script. Prompts for all inputs at runtime.
+
+### Operator SOP (Quick Run)
 
 1. Activate PIM Owner role for the Resource Group that contains the Key Vault (if your tenant uses PIM).
 2. Open PowerShell and run:
@@ -33,7 +78,11 @@ Set-AzContext -SubscriptionId <your-subscription-id>
 
 7. Keep PIM role active until the script completes and lock restore is done.
 
+---
+
 ## Prerequisites
+
+> These apply to **both** the GUI and CLI versions.
 
 ### Access and Roles
 You need permission to:
@@ -85,23 +134,19 @@ If locks exist, the script can remove and later restore them.
 
 ## Important Behavior
 
+Applies to both versions:
+
 - Re-running Add is safe: existing assignments are skipped.
 - Remove only removes direct Key Vault scope assignments.
-- If a role is inherited from Resource Group/Subscription scope, it is skipped and reported.
-- If lock-related conflict appears, wait 30-60 seconds and rerun (lock propagation delay).
+- Roles inherited from Resource Group/Subscription scope are skipped and reported.
+- If a lock conflict appears after removal, wait 30–60 seconds and re-run (lock propagation delay).
 
 ## Quick Troubleshooting
 
-- User not found in Azure AD:
-  - Verify UserID spelling/tenant
-  - Use correct UPN or object ID
-
-- Insufficient permissions:
-  - Activate/assign Owner at Resource Group scope
-
-- Key Vault not found:
-  - Verify subscription, resource group, and vault name
-
-- Required file not found: users_and_roles.csv:
-  - Place file in script folder
-  - Confirm header is exactly UserID,Role
+| Symptom | Resolution |
+|---|---|
+| User not found in Azure AD | Verify UPN spelling / use object ID (GUID) |
+| Insufficient permissions | Activate or assign Owner at Resource Group scope |
+| Key Vault not found | Verify subscription, resource group, and vault name |
+| `users_and_roles.csv` not found | Place file in script folder; confirm header is exactly `UserID,Role` |
+| GUI won't start | Ensure PowerShell 5.1+ is used (not PowerShell 7 on some systems) |
